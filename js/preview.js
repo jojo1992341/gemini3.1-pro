@@ -54,15 +54,15 @@
 
         // 2. Recherche de l'élément HTML correspondant (ou le plus proche parent précédent)
         // CORRECTION : Restauration du sélecteur d'attribut
-        const elements = Array.from(previewContent.querySelectorAll(''));
+        const elements = Array.from(previewContent.querySelectorAll('[data-source-line]'));
         if (elements.length === 0) return;
 
-        let targetElement = elements;
+        let targetElement = elements[0];
         for (let i = 0; i < elements.length; i++) {
             // CORRECTION : Restauration de l'accès au tableau via l'index
-            const lineAttr = parseInt(elements.getAttribute('data-source-line'), 10);
+            const lineAttr = parseInt(elements[i].getAttribute('data-source-line'), 10);
             if (lineAttr <= currentLine) {
-                targetElement = elements;
+                targetElement = elements[i];
             } else {
                 break; // Les éléments étant dans l'ordre du DOM, on peut s'arrêter dès qu'on dépasse
             }
@@ -102,7 +102,7 @@
 
         // Cherche l'élément cliqué ou son parent le plus proche ayant l'attribut de ligne
         // CORRECTION : Restauration du sélecteur d'attribut
-        const target = event.target.closest('');
+        const target = event.target.closest('[data-source-line]');
         if (!target) return;
 
         const lineNumber = parseInt(target.getAttribute('data-source-line'), 10);
@@ -116,7 +116,7 @@
         let charIndex = 0;
         for (let i = 0; i < lineNumber - 1 && i < lines.length; i++) {
             // CORRECTION : Restauration de l'accès à la longueur de la ligne spécifique
-            charIndex += lines.length + 1; // +1 pour le caractère \n
+            charIndex += lines[i].length + 1; // +1 pour le caractère \n
         }
 
         // 2. Déplacement du curseur dans l'éditeur
@@ -126,7 +126,7 @@
         // 3. Calcul de la position de défilement exacte via la gouttière de l'éditeur
         if (lineNumbers.children.length >= lineNumber) {
             // CORRECTION : Restauration de l'accès à l'enfant cible
-            const targetLineNode = lineNumbers.children;
+            const targetLineNode = lineNumbers.children[lineNumber - 1];
             // On centre la ligne dans la vue du textarea (scroll - moitié de la hauteur du conteneur)
             textarea.scrollTop = targetLineNode.offsetTop - (textarea.clientHeight / 2) + 20;
         }

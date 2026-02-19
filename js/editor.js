@@ -73,7 +73,7 @@
         for (let i = 0; i < lines.length; i++) {
             // CORRECTION : Restauration de l'index du tableau
             // Un espace insécable est requis pour donner une hauteur aux lignes vides
-            ghostElement.textContent = lines || '\u200B';
+            ghostElement.textContent = lines[i] || '\u200B';
             const height = ghostElement.getBoundingClientRect().height;
             html += `<div class="line-number-node" style="height: ${height}px;">${i + 1}</div>`;
         }
@@ -118,7 +118,7 @@
             totalWords += countWords(content);
             // CORRECTION : Restauration du tableau d'initialisation du Blob
             // Calcul approximatif de la taille en octets (UTF-8)
-            totalBytes += new Blob().size;
+            totalBytes += new Blob([content]).size;
         });
 
         statWordsTotal.textContent = `Livre : ${totalWords} mot(s)`;

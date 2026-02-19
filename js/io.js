@@ -25,7 +25,7 @@
         const state = window.AppStore.getState();
         let title = state.metadata.title || 'Livre_sans_titre';
         // CORRECTION : Restauration de la regex pour supprimer les caractères problématiques
-        title = title.replace(//g, '').trim().replace(/\s+/g, '_');
+        title = title.replace(/[^a-z0-9_\- ]/gi, '').trim().replace(/\s+/g, '_');
         if (!title) title = 'export_livre';
         return `${title}.${extension}`;
     }
@@ -140,7 +140,7 @@
 </html>`;
 
         // CORRECTION : Restauration des crochets pour le constructeur Blob
-        const blob = new Blob(, { type: "text/html;charset=utf-8" });
+        const blob = new Blob([fullHtml], { type: "text/html;charset=utf-8" });
         saveAs(blob, getSafeFilename('html'));
     }
 
@@ -161,7 +161,7 @@
         const fullMd = window.Parser.reassemble(chaptersData);
         
         // CORRECTION : Restauration des crochets pour le constructeur Blob
-        const blob = new Blob(, { type: "text/markdown;charset=utf-8" });
+        const blob = new Blob([fullMd], { type: "text/markdown;charset=utf-8" });
         saveAs(blob, getSafeFilename('md'));
     }
 
@@ -237,7 +237,7 @@
         if (files.length === 0) return;
 
         // CORRECTION : Restauration de l'index du tableau
-        const file = files;
+        const file = files[0];
         processImportFile(file);
     }
 
@@ -258,7 +258,7 @@
     fileImport.addEventListener('change', (e) => {
         const files = e.target.files;
         if (files.length > 0) {
-            processImportFile(files);
+            processImportFile(files[0]);
             // Réinitialisation de la valeur pour permettre de réimporter le même fichier
             e.target.value = '';
         }

@@ -29,7 +29,7 @@
                 if (token.map && token.type !== 'inline') {
                     // map correspond à la ligne de début. 
                     // CORRECTION : Restauration de la syntaxe du tableau pour l'attribut HTML
-                    token.attrPush(['data-source-line', String(token.map + 1)]);
+                    token.attrPush(['data-source-line', String(token.map[0] + 1)]);
                 }
             });
         });
@@ -78,7 +78,7 @@
                 }
                 
                 // CORRECTION : Restauration de l'index d'accès au groupe de capture
-                let currentTitle = firstMatch.trim();
+                let currentTitle = firstMatch[1].trim();
                 let currentStartIndex = regex.lastIndex;
                 
                 // Parcours itératif des autres délimiteurs
@@ -91,7 +91,7 @@
                     });
                     
                     // CORRECTION : Restauration de l'accès au tableau
-                    currentTitle = match.trim();
+                    currentTitle = match[1].trim();
                     currentStartIndex = regex.lastIndex;
                 }
                 

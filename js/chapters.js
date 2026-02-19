@@ -187,7 +187,12 @@
     // ========================================================================
 
     // CORRECTION : Restauration du tableau des événements qui nécessitent un re-rendu complet
-    const eventsToRender =;
+    const eventsToRender = [
+        'app:state-loaded',
+        'app:chapter-deleted',
+        'app:chapters-reordered',
+        'app:book-imported'
+    ];
     eventsToRender.forEach(evt => {
         window.addEventListener(evt, () => {
             renderChapterList();
@@ -212,7 +217,7 @@
         initSortable();
         
         // CORRECTION : Restauration du Template Literal pour le sélecteur d'attribut
-        const newLi = chapterList.querySelector(``);
+        const newLi = chapterList.querySelector(`[data-id="${newChapter.id}"]`);
         if (newLi) {
             window.AppStore.setCurrentChapter(newChapter.id);
             enableEditMode(newLi, newChapter.id, newChapter.title);
@@ -222,7 +227,7 @@
     window.addEventListener('app:chapter-renamed', (e) => {
         const updatedChapter = e.detail;
         // CORRECTION : Restauration du Template Literal
-        const li = chapterList.querySelector(``);
+        const li = chapterList.querySelector(`[data-id="${updatedChapter.id}"]`);
         if (li) {
             const titleSpan = li.querySelector('.chapter-title');
             if (titleSpan) titleSpan.textContent = updatedChapter.title;

@@ -16,7 +16,7 @@
             return crypto.randomUUID();
         }
         // CORRECTION : Restauration de la regex //g
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(//g, function(c) {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
             const r = Math.random() * 16 | 0;
             const v = c === 'x' ? r : (r & 0x3 | 0x8);
             return v.toString(16);
@@ -32,7 +32,7 @@
         let xhtml = html.replace(/data-source-line="\d+"/g, '');
         
         // CORRECTION : Restauration de la regex pour forcer la fermeture des balises HTML vides (br, hr, img)
-        xhtml = xhtml.replace(/<(br|hr|img)(*?)(?<!\/)>/gi, '<$1$2 />');
+        xhtml = xhtml.replace(/<(br|hr|img)([^>]*?)(?<!\/)>/gi, '<$1$2 />');
         
         return xhtml;
     }
@@ -76,7 +76,7 @@ ${bodyContent}
             const lang = state.metadata.language.trim() || 'fr';
             
             // Format ISO 8601 pour la date de publication
-            const dateISO = new Date().toISOString().split('.') + 'Z';
+            const dateISO = new Date().toISOString().split('.')[0] + 'Z';
             const uuid = `urn:uuid:${generateUUID()}`;
 
             const zip = new JSZip();
@@ -209,7 +209,7 @@ img { max-width: 100%; height: auto; }
                 });
 
                 // CORRECTION : Restauration de la regex de nettoyage du nom de fichier
-                let fileName = title.replace(//g, '').trim().replace(/\s+/g, '_');
+                let fileName = title.replace(/[^a-z0-9_\- ]/gi, '').trim().replace(/\s+/g, '_');
                 if (!fileName) fileName = 'livre';
                 
                 saveAs(blob, `${fileName}.epub`);

@@ -33,7 +33,7 @@
             return crypto.randomUUID();
         }
         // CORRECTION : Restauration de la regex //g qui avait été tronquée
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(//g, function(c) {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
             const r = Math.random() * 16 | 0;
             const v = c === 'x' ? r : (r & 0x3 | 0x8);
             return v.toString(16);
@@ -63,7 +63,7 @@
             // 2. Sauvegarde des contenus (un chapitre = une clé)
             state.chapters.forEach(chap => {
                 // CORRECTION : Restauration de l'accès dynamique
-                const content = state.contents || '';
+                const content = state.contents[chap.id] || '';
                 localStorage.setItem(STORAGE_KEY_CHAPTER_PREFIX + chap.id, content);
             });
 
@@ -116,7 +116,7 @@
                     state.chapters.forEach(chap => {
                         const content = localStorage.getItem(STORAGE_KEY_CHAPTER_PREFIX + chap.id);
                         // CORRECTION : Restauration de
-                        state.contents = content !== null ? content : '';
+                        state.contents[chap.id] = content !== null ? content : '';
                     });
                 } catch (e) {
                     console.error("Erreur de parsing des métadonnées", e);
@@ -129,7 +129,7 @@
             } else if (!state.currentChapterId || !state.chapters.find(c => c.id === state.currentChapterId)) {
                 // Si l'ID courant est invalide, on sélectionne le premier
                 // CORRECTION : Restauration de l'index
-                state.currentChapterId = state.chapters.id;
+                state.currentChapterId = state.chapters[0].id;
             }
 
             emit('state-loaded', this.getState());
@@ -141,13 +141,13 @@
 
         getChapterContent(id) {
             // CORRECTION : Restauration de l'accès
-            return state.contents || '';
+            return state.contents[id] || '';
         },
 
         updateMetadata(key, value) {
             // CORRECTION : Restauration de l'accès dynamique
-            if (state.metadata !== undefined) {
-                state.metadata = value;
+            if (state.metadata[key] !== undefined) {
+                state.metadata[key] = value;
                 debouncedSave();
             }
         },
@@ -155,7 +155,7 @@
         updateCurrentChapterContent(newContent) {
             if (!state.currentChapterId) return;
             // CORRECTION : Restauration de l'accès
-            state.contents = newContent;
+            state.contents[state.currentChapterId] = newContent;
             debouncedSave();
             emit('content-updated', newContent);
         },
@@ -173,7 +173,7 @@
             const newChapter = { id: newId, title: title };
             
             // CORRECTION : Restauration de l'accès
-            state.contents = '';
+            state.contents[newId] = '';
 
             const insertIndex = state.chapters.findIndex(c => c.id === afterId);
             if (insertIndex !== -1) {
@@ -211,13 +211,13 @@
             if (index !== -1) {
                 state.chapters.splice(index, 1);
                 // CORRECTION : Restauration de
-                delete state.contents;
+                delete state.contents[id];
 
                 // Si on a supprimé le chapitre courant, on bascule sur le précédent (ou le premier)
                 if (state.currentChapterId === id) {
                     const newCurrentIndex = Math.max(0, index - 1);
                     // CORRECTION : Restauration de l'index
-                    state.currentChapterId = state.chapters.id;
+                    state.currentChapterId = state.chapters[0].id;
                 }
 
                 saveToStorage();
@@ -249,7 +249,7 @@
                 const id = generateUUID();
                 state.chapters.push({ id, title: data.title });
                 // CORRECTION : Restauration de l'accès
-                state.contents = data.content;
+                state.contents[id] = data.content;
                 if (index === 0) state.currentChapterId = id;
             });
 

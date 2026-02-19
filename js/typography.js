@@ -14,7 +14,7 @@
          */
         isAlphanumeric(char) {
             // CORRECTION : Restauration de la regex alphanumérique avec support des accents
-            return /^$/.test(char);
+            return /^[A-Za-zÀ-ÖØ-öø-ÿ0-9]$/.test(char);
         },
 
         /**
@@ -41,7 +41,7 @@
 
             for (let i = 0; i < lines.length; i++) {
                 // CORRECTION : Restauration de l'index du tableau
-                let line = lines;
+                let line = lines[i];
 
                 // Si la ligne est uniquement un jeton de code protégé, on l'ignore
                 if (/^__CODE_BLOCK_\d+__$/.test(line.trim())) {
@@ -55,7 +55,7 @@
                 let smartLine = '';
                 for (let j = 0; j < line.length; j++) {
                     // CORRECTION : Restauration de l'index de la chaîne
-                    let c = line;
+                    let c = line[j];
                     
                     if (c === '«') {
                         isDialogueOpen = true;
@@ -65,8 +65,8 @@
                         smartLine += c;
                     } else if (c === "'" || c === '"') {
                         // CORRECTION : Restauration des accès aux caractères précédent et suivant
-                        let prev = j > 0 ? line : ' ';
-                        let next = j < line.length - 1 ? line : ' ';
+                        let prev = j > 0 ? line[j - 1] : ' ';
+                        let next = j < line.length - 1 ? line[j + 1] : ' ';
                         
                         // Détection de l'apostrophe interne
                         if (this.isAlphanumeric(prev) && this.isAlphanumeric(next)) {
@@ -91,7 +91,7 @@
                 line = this.reorderMarkers(line);
 
                 // CORRECTION : Restauration de l'index du tableau
-                lines = line;
+                lines[i] = line;
             }
 
             processedText = lines.join('\n');
@@ -99,7 +99,7 @@
             // 3. Réinsertion des blocs de code originaux à la place des jetons
             processedText = processedText.replace(/__CODE_BLOCK_(\d+)__/g, (match, index) => {
                 // CORRECTION : Restauration de l'accès au tableau via l'index parsé
-                return codePlaceholders;
+                return codePlaceholders[parseInt(index, 10)];
             });
 
             return processedText;
