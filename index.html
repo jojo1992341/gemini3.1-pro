@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Éditeur Markdown - Création d'EPUB</title>
+    
+    <!-- Feuille de style unique -->
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- Dépendances CDN externes -->
+    <!-- Markdown-it : Moteur de rendu rapide et extensible (nécessaire pour injecter les data-source-line) -->
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js"></script>
+    <!-- SortableJS : Gestion fluide du glisser-déposer pour le réordonnancement des chapitres -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+    <!-- JSZip : Création d'archives ZIP en mémoire (indispensable pour l'EPUB) -->
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+    <!-- FileSaver.js : Déclenchement propre des téléchargements côté client -->
+    <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+</head>
+<body>
+
+    <!-- Barre d'outils supérieure -->
+    <header id="main-toolbar">
+        <div class="toolbar-section metadata-section">
+            <input type="text" id="meta-title" placeholder="Titre du livre" aria-label="Titre du livre">
+            <input type="text" id="meta-author" placeholder="Auteur" aria-label="Auteur">
+            <input type="text" id="meta-language" placeholder="Langue (ex: fr)" value="fr" aria-label="Langue">
+        </div>
+        
+        <div class="toolbar-section actions-section">
+            <div class="editor-controls">
+                <button id="btn-font-decrease" title="Réduire la police">A-</button>
+                <button id="btn-font-increase" title="Agrandir la police">A+</button>
+                <button id="btn-theme-toggle" title="Basculer le thème">🌙 / ☀️</button>
+            </div>
+            <div class="export-controls">
+                <!-- Champ de fichier masqué pour l'importation via l'explorateur OS -->
+                <input type="file" id="file-import" accept=".md,.txt" style="display: none;">
+                <button id="btn-import">Import MD/TXT</button>
+                
+                <button id="btn-export-epub" class="primary">Export EPUB</button>
+                <button id="btn-export-html">Export HTML</button>
+                <button id="btn-export-md">Export MD</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Conteneur principal de l'application (Grille) -->
+    <main id="app-container">
+        
+        <!-- Panneau latéral : Liste des chapitres -->
+        <aside id="sidebar">
+            <div class="sidebar-header">
+                <h2>Chapitres</h2>
+                <button id="btn-add-chapter" title="Ajouter un chapitre">+</button>
+            </div>
+            <ul id="chapter-list">
+                <!-- Les chapitres seront injectés ici par chapters.js -->
+            </ul>
+        </aside>
+
+        <!-- Panneau central : Éditeur de texte -->
+        <section id="editor-panel">
+            <!-- Gouttière des numéros de ligne -->
+            <div id="line-numbers" aria-hidden="true"></div>
+            <!-- Zone de saisie Markdown -->
+            <textarea id="markdown-editor" spellcheck="false" placeholder="Rédigez votre chapitre ici... (Glissez-déposez un fichier .md ou .txt pour tout remplacer)"></textarea>
+        </section>
+
+        <!-- Panneau droit : Prévisualisation -->
+        <section id="preview-panel">
+            <div id="preview-content" class="markdown-body">
+                <!-- Le HTML généré sera injecté ici par preview.js -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Barre d'état inférieure : Statistiques -->
+    <footer id="status-bar">
+        <span id="stat-chapters">0 chapitre(s)</span> | 
+        <span id="stat-words-current">Chapitre : 0 mot(s)</span> | 
+        <span id="stat-words-total">Livre : 0 mot(s)</span> | 
+        <span id="stat-size">Taille : 0 Ko</span>
+    </footer>
+
+    <!-- Scripts de l'application (Chargement synchrone, ordre critique) -->
+    <!-- 1. Cœur de l'application -->
+    <script src="js/state.js"></script>
+    <script src="js/typography.js"></script>
+    <script src="js/parser.js"></script>
+    
+    <!-- 2. Composants UI -->
+    <script src="js/editor.js"></script>
+    <script src="js/preview.js"></script>
+    <script src="js/chapters.js"></script>
+    
+    <!-- 3. Entrées / Sorties -->
+    <script src="js/epub.js"></script>
+    <script src="js/io.js"></script>
+    
+    <!-- 4. Orchestrateur (Doit être chargé en dernier) -->
+    <script src="js/main.js"></script>
+
+</body>
+</html>
